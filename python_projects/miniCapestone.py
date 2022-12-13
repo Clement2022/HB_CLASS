@@ -1,37 +1,56 @@
-import speech_recognition as don
 import pyttsx3
-import pywhatkit
+import datetime
 import wikipedia
-import datetime 
+import pywhatkit
+import speech_recognition as sr
 
-listener = don.Recognizer()
-speaking = pyttsx3.init()
+# Receiving the audio command from the user
+voice = sr.Recognizer()
+engine = pyttsx3.init()
 
+
+# Talk to the user by greeting & ask what they need help with
 def talk_back(text):
-    speaking.say(text)
-    speaking.runAndWait()
+    engine.say(text)
+    engine.runAndWait()
 
-def take_command():
-    try:
-        with don.Microphone() as source:
-            print('listening...........')
-            voice = listener.listen(source)
-            say_a_command = listener.recognize_google(voice)
-            say_a_command = say_a_command.lower()
-            if 'clement' in say_a_command:
-                say_a_command = say_a_command.replace('clement', '')
-                print(say_a_command)
 
-    except:
-        pass
-    return take_command()
+# Greeting command & introduction
+talk_back('Hi, I am Clement')
+talk_back('How can I help you')
+print("\nListening....")
 
-def received_run():
-    say_a_command = take_command()
-    print(say_a_command)
-    if 'play' in say_a_command:
-        song = say_a_command.replace('play', '')
-        talk_back('playing ' + song)
-        pywhatkit.playonyt(song)
 
-received_run()
+def speaker():
+    with sr.Microphone() as source:
+        audio = voice.listen(source)
+        voice.adjust_for_ambient_noise(source)
+        text = voice.recognize_google(audio)
+        # ------------------------------------------------
+        command = voice.recognize_google(audio)
+        command = command.lower()
+
+        # Conditional statement to check if the mention command
+        if 'play' in command:
+            song = command.replace('play', '')
+            talk_back('Got it' + song)
+            pywhatkit.playonyt(song)
+
+        elif 'time' in command:
+            time = datetime.datetime.now().strftime('%I:%M %p')
+            print(time)
+            talk_back(time + " is the current time in your area!")
+            talk_back("Is there anything you need help with?")
+
+        # Handle multiple commands send to by the user
+        elif "who" in command or "what" in command or "how" in command or "when" in command:
+            summary = wikipedia.summary(text)
+            print(text)
+            print(summary, "\n")
+            talk_back(summary)
+
+        else:
+            talk_back("I don't quite understand your command")
+ 
+
+speaker()
