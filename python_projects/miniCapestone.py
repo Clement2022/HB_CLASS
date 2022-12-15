@@ -16,9 +16,11 @@ def talk_back(text):
 
 
 # Greeting command & introduction
-talk_back('Hi, I am Clement')
+talk_back('Hi, I am Clement, and welcome to my command center')
 talk_back('How can I help you')
 print("\nListening....")
+talk_back("Please say a command and I am listening")
+
 
 
 def speaker():
